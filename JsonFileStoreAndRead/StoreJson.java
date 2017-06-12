@@ -1,8 +1,9 @@
-package com.CourseSchedule.DataParser;
+package com.CourseSchedule.JsonFileStoreAndRead;
 
 import com.CourseSchedule.CourseScheduleManager.*;
 import com.CourseSchedule.CourseScheduleManager.Exceptions.InstructorTBAException;
 import com.CourseSchedule.CourseScheduleManager.Exceptions.NoScheduledMeetingException;
+import com.CourseSchedule.DataParser.ReadObjects;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,9 +19,9 @@ import java.util.Set;
  */
 public class StoreJson {
     public static final String JSON = ".json";
-    public static final String SECTION_JSON_PATH = "/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/sections/";
-    public static final String COURSES_JSON_PATH = "/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/courses/";
-    public static final String DEPARTMENT_JSON_PATH = "/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/departments/";
+    public static final String SECTION_JSON_PATH = "/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/JsonData/sections/";
+    public static final String COURSES_JSON_PATH = "/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/JsonData/courses/";
+    public static final String DEPARTMENT_JSON_PATH = "/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/JsonData/departments/";
 
     public StoreJson() {
         new ReadObjects();
@@ -49,21 +50,18 @@ public class StoreJson {
         departmentObject.put("name", department.getName());
         departmentObject.put("faculty", department.getFaculty());
 
-        JSONObject coursesObjects = new JSONObject();
-        JSONArray courseJsonArray = new JSONArray();
         for (Course course : department) {
 
-            storeCourseJson(courseJsonArray, course);
+            storeCourseJson(course);
 
         }
-        //departmentObject.put("courses", courseJsonArray);
 
         FileWriter fileWriter = new FileWriter(DEPARTMENT_JSON_PATH + department.getShortName() + JSON);
         fileWriter.write(departmentsJsonArray.toString());
         fileWriter.flush();
     }
 
-    private void storeCourseJson(JSONArray courseJsonArray, Course course) throws JSONException, IOException {
+    private void storeCourseJson(Course course) throws JSONException, IOException {
         JSONObject courseJson = new JSONObject();
         courseJson.put("courseNumber", course.getCourseNumber());
         courseJson.put("courseName", course.getCourseName());
@@ -71,11 +69,9 @@ public class StoreJson {
         courseJson.put("credits", course.getCredits());
         courseJson.put("reqs", course.getReqs());
 
-        JSONObject sectionObjects = new JSONObject();
-        JSONArray sectionJsonArray = new JSONArray();
         for (Section section : course) {
 
-            storeSectionJson(sectionJsonArray, section);
+            storeSectionJson(section);
 
         }
 
@@ -85,7 +81,7 @@ public class StoreJson {
         fileWriter.flush();
     }
 
-    private void storeSectionJson(JSONArray sectionJsonArray, Section section) throws JSONException, IOException {
+    private void storeSectionJson(Section section) throws JSONException, IOException {
         JSONObject sectionJson = new JSONObject();
         sectionJson.put("section", section.getSection());
         sectionJson.put("status", section.getStatus());

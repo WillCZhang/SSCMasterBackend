@@ -1,4 +1,4 @@
-package com.CourseSchedule;
+package com.CourseSchedule.JsonFileStoreAndRead;
 
 import com.CourseSchedule.CourseScheduleManager.*;
 import org.json.JSONArray;

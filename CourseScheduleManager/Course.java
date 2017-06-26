@@ -4,15 +4,14 @@ import com.CourseSchedule.CourseScheduleManager.Exceptions.InstructorTBAExceptio
 import com.CourseSchedule.CourseScheduleManager.Exceptions.NoScheduledMeetingException;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Will on 2017/5/20.
  */
 public class Course implements Serializable, Iterable<Section> {
+    private static final long serialVersionUID = -5046968324155930043L;
+
     private Department department;
     private String courseNumber;
     private String courseName;
@@ -20,6 +19,7 @@ public class Course implements Serializable, Iterable<Section> {
     private String credits;
     private String reqs;
     private Set<Section> sections;
+    private List<String> sectionsList;
 
     private Set<Instructor> instructorsWhoOfferThisCourse;
     private Set<Classroom> classrooms;
@@ -32,10 +32,19 @@ public class Course implements Serializable, Iterable<Section> {
         this.credits = "Credits: 3";
 
         sections = new HashSet<Section>();
+        sectionsList = new ArrayList<>();
         instructorsWhoOfferThisCourse = new HashSet<Instructor>();
         classrooms = new HashSet<Classroom>();
 
         department.addCourse(this);
+    }
+
+    public List<String> getSectionsList() {
+        return sectionsList;
+    }
+
+    public void addSection(String section) {
+        sectionsList.add(section);
     }
 
     public void setCredits(String credits) {
@@ -65,13 +74,11 @@ public class Course implements Serializable, Iterable<Section> {
     private void addInstructorAndClassroom(Section section) {
         try {
             instructorsWhoOfferThisCourse.add(section.getInstructor());
-        } catch (InstructorTBAException e) {
-
+        } catch (InstructorTBAException ignored) {
         }
         try {
             classrooms.add(section.getClassroom());
-        } catch (NoScheduledMeetingException e) {
-
+        } catch (NoScheduledMeetingException ignored) {
         }
     }
 
@@ -81,6 +88,22 @@ public class Course implements Serializable, Iterable<Section> {
             if (section.equals(temp))
                 return section;
         throw new NoSuchElementException();
+    }
+
+    public List<String> getSectionsForDisplay() {
+        List<String> temp = new ArrayList<>();
+        for (Section section : sections) {
+            String a = "section!" + section.getSection() + "@"
+                    + section.getActivity() + "@" +
+                    section.getTerm() + "@";
+            try {
+                a += section.getInstructor().getName();
+            } catch (InstructorTBAException e) {
+                a += "Instructor TBA";
+            }
+            temp.add(a);
+        }
+        return temp;
     }
 
     public boolean sameCourse(Course course) {

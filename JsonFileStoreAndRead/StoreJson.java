@@ -19,45 +19,83 @@ import java.util.Set;
  */
 public class StoreJson {
     public static final String JSON = ".json";
-    public static final String SECTION_JSON_PATH = "/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/JsonData/sections/";
-    public static final String COURSES_JSON_PATH = "/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/JsonData/courses/";
-    public static final String DEPARTMENT_JSON_PATH = "/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/JsonData/departments/";
+    public static final String tempPath = "/Users/ZC/Documents/UBCCourseManager/app/src/main/assets/";
+    public static final String SECTION_JSON_PATH = tempPath;
+            //"/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/JsonData/sections/";
+    public static final String COURSES_JSON_PATH = tempPath;
+            //"/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/JsonData/courses/";
+    public static final String DEPARTMENT_JSON_PATH = tempPath;
+                    //"/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/JsonData/departments/";
+    public static final String FACULTY_JSON = tempPath;
+                            //"/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/JsonData/faculties/";
 
     public StoreJson() {
         new ReadObjects();
-        for (int i = 0; i < CourseManager.getInstance().getFaculties().length; i++)
-            System.out.println(CourseManager.getInstance().getFaculties()[i]);
 
         Storing();
+
+        System.out.println("Done!");
     }
 
     private void Storing() {
         try {
-            JSONArray departmentsJsonArray = new JSONArray();
             for (Department department : CourseManager.getInstance().getDepartments()) {
 
-                storeDepartmentJson(departmentsJsonArray, department);
+                storeDepartmentJson(department);
 
             }
-        } catch (JSONException ignored) {}
-        catch (IOException ignored) {}
+        } catch (JSONException | IOException e) {
+            System.out.println(e.getMessage());
+        }
+
+
+        storeFaculties();
+    }
+
+    private void storeFaculties() {
+        try {
+            for (String faculty : CourseManager.getInstance().getFaculties()) {
+                JSONObject facultyObject = new JSONObject();
+                String name = "name";
+                String departments = "departments";
+                String departmentShortName = "department";
+                if (!faculty.equals("Regi")) {
+                    facultyObject.put(name, faculty);
+                    JSONArray departmentArray = new JSONArray();
+                    for (Department department : CourseManager.getInstance().getDepartmentSetByFaculty(faculty)) {
+                        JSONObject temp = new JSONObject();
+                        temp.put(departmentShortName, department.getShortName());
+                        departmentArray.put(temp);
+                    }
+                    facultyObject.put(departments, departmentArray);
+                    FileWriter fileWriter = new FileWriter(FACULTY_JSON + faculty + JSON);
+                    fileWriter.write(facultyObject.toString());
+                    fileWriter.flush();
+                }
+            }
+        } catch (JSONException | IOException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
 
-    private void storeDepartmentJson(JSONArray departmentsJsonArray, Department department) throws JSONException, IOException {
+    private void storeDepartmentJson(Department department) throws JSONException, IOException {
         JSONObject departmentObject = new JSONObject();
         departmentObject.put("shortName", department.getShortName());
         departmentObject.put("name", department.getName());
         departmentObject.put("faculty", department.getFaculty());
 
+        JSONArray coursesList = new JSONArray();
         for (Course course : department) {
-
             storeCourseJson(course);
-
+            JSONObject temp = new JSONObject();
+            temp.put("course", course.getCourseNumber());
+            coursesList.put(temp);
         }
+        departmentObject.put("courses", coursesList);
 
         FileWriter fileWriter = new FileWriter(DEPARTMENT_JSON_PATH + department.getShortName() + JSON);
-        fileWriter.write(departmentsJsonArray.toString());
+        fileWriter.write(departmentObject.toString());
         fileWriter.flush();
     }
 
@@ -69,11 +107,14 @@ public class StoreJson {
         courseJson.put("credits", course.getCredits());
         courseJson.put("reqs", course.getReqs());
 
+        JSONArray sectionsList = new JSONArray();
         for (Section section : course) {
-
             storeSectionJson(section);
-
+            JSONObject temp = new JSONObject();
+            temp.put("section", section.getSection());
+            sectionsList.put(temp);
         }
+        courseJson.put("sections", sectionsList);
 
         FileWriter fileWriter = new FileWriter(COURSES_JSON_PATH +
                 course.getDepartment().getShortName() + course.getCourseNumber() + JSON);
@@ -87,6 +128,14 @@ public class StoreJson {
         sectionJson.put("status", section.getStatus());
         sectionJson.put("activity", section.getActivity());
         sectionJson.put("term", section.getTerm());
+        // TODO: new part, do refactor accordingly
+        sectionJson.put("total", section.getTotalSeats());
+        sectionJson.put("current", section.getCurrentRegistered());
+        sectionJson.put("general", section.getGeneralSeats());
+        sectionJson.put("restrict", section.getRestrictSeats());
+        sectionJson.put("restrictedTo", section.getRestrictTo());
+        sectionJson.put("withrawDay", section.getLastWithdraw());
+
         try {
             Classroom classroom = section.getClassroom();
             sectionJson.put("classroom", classroom.getName());

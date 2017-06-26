@@ -69,7 +69,6 @@ public class ModifyMultithreadedRequestData implements Runnable{
         // codes for signal-thread
 //        for (Element department : departments)
 //            getInfoFromDepartment(department);
-        CourseManager.getInstance().print();
     }
 
     private synchronized void getInfoFromDepartment(Element department) throws IOException {
@@ -86,7 +85,7 @@ public class ModifyMultithreadedRequestData implements Runnable{
             Department tempDepartment = new Department(shortName);
             tempDepartment.setName(departmentName);
             tempDepartment.setFaculty(facultyName);
-            CourseManager.getInstance().addDepartment(tempDepartment);
+            CourseManager.getInstance().addDepartmentForDownloadData(tempDepartment);
 
             String urlForCoursesList = shortNameElement.attr("href");
             String coursesListText = reading(PREFIX + urlForCoursesList);
@@ -161,6 +160,36 @@ public class ModifyMultithreadedRequestData implements Runnable{
             Document sectionInfoDoc = Jsoup.parse(sectionInfoText);
             Element sectionPage = sectionInfoDoc.getElementsByClass("content expand").first();
 
+            // dealing with last day to withdraw
+            Element withdrawDay = sectionPage.getElementsByClass("table table-nonfluid").first();
+            Element withdrawInfoElement = withdrawDay.getElementsByTag("tbody").first();
+            String withdrawInfo = withdrawInfoElement.text();
+
+            // dealing with seats
+            Element seatsSummaryElement = sectionPage.getElementsByAttribute("table-nonfluid&#39;").first();
+            int total = 0;
+            int current = 0;
+            int general = 0;
+            int restricted = 0;
+            String restrictedTo = "";
+            if (seatsSummaryElement != null) {
+                Element seatsInfoElement = seatsSummaryElement.getElementsByTag("tbody").first();
+                String seatsInfoCombine = getSeatsInfo(seatsInfoElement);
+                try {
+                    String[] seatsInfoArray = seatsInfoCombine.split("@");
+                    total = Integer.parseInt(seatsInfoArray[0]);
+                    current = Integer.parseInt(seatsInfoArray[1]);
+                    general = Integer.parseInt(seatsInfoArray[2]);
+                    restricted = Integer.parseInt(seatsInfoArray[3]);
+                    if (seatsInfoArray.length > 4)
+                        restrictedTo = seatsInfoArray[4];
+                } catch (IndexOutOfBoundsException | NumberFormatException e) {
+                    System.out.println("IndexOutOfBoundsException | NumberFormatException is found in " +
+                            editingCourse.getDepartment().getShortName() + editingCourse.getCourseNumber()
+                            + sectionInfoText);
+                }
+            }
+
             // dealing with classroom info
             Element classroomInfo = sectionPage.getElementsByClass("table  table-striped").first();
             Classroom classroom1;
@@ -206,7 +235,11 @@ public class ModifyMultithreadedRequestData implements Runnable{
             if (status.equals("Blocked"))
                 return;
 
+            // Set the section
             Section currentSection = new Section(editingCourse, Section, status, activity, instructor, classroom1, term);
+            currentSection.setLastWithdraw(withdrawInfo);
+            currentSection.setSeatsInfo(total, current, restricted, general);
+            currentSection.setRestrictTo(restrictedTo);
             editingCourse.addSection(currentSection);
             if (instructor != null)
                 instructor.addSection(currentSection);
@@ -243,6 +276,35 @@ public class ModifyMultithreadedRequestData implements Runnable{
 
             }
         }
+    }
+
+    private String getSeatsInfo(Element seatsInfoElement) {
+        String temp = "";
+        String split = "@";
+        String total = "";
+        String current = "";
+        String general = "";
+        String restricted = "";
+        String restrictedTo = "";
+        Elements tempInfo = seatsInfoElement.getElementsByTag("tr");
+        for (Element element : tempInfo) {
+            if (element.text().contains("Total"))
+                total = element.getElementsByTag("strong").first().text();
+            else if (element.text().contains("Current"))
+                current = element.getElementsByTag("strong").first().text();
+            else if (element.text().contains("General"))
+                general = element.getElementsByTag("strong").first().text();
+            else if (element.text().contains("Restricted"))
+                restricted = element.getElementsByTag("strong").first().text();
+            else
+                restrictedTo = element.text();
+        }
+        temp = total + split +
+                current + split +
+                general + split +
+                restricted + split + restrictedTo;
+
+        return temp;
     }
 
     private static Elements findingInstructorInfo(Elements info) {
@@ -338,8 +400,6 @@ public class ModifyMultithreadedRequestData implements Runnable{
         long end = System.currentTimeMillis();
         long time = end - start;
         System.out.println("Time: " + time);
-        System.out.println("Course info starts here:");
-        CourseManager.getInstance().print();
     }
 
     public static void serializeManagers() {

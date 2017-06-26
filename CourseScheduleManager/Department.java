@@ -15,12 +15,14 @@ public class Department implements Serializable, Iterable<Course> {
     private String name;
     private String faculty;
     private Set<Course> courses;
+    private Set<String> courseNumbers;
 
     public Department(String shortName) {
         this.shortName = shortName;
         this.name = "";
         this.faculty = "";
         courses = new HashSet<Course>();
+        courseNumbers = new HashSet<>();
     }
 
     public void setName(String name) {
@@ -33,6 +35,10 @@ public class Department implements Serializable, Iterable<Course> {
 
     public void addCourse(Course course) {
         courses.add(course);
+    }
+
+    public void addCourseNumber(String number) {
+        courseNumbers.add(number);
     }
 
     public String getShortName() {
@@ -61,6 +67,10 @@ public class Department implements Serializable, Iterable<Course> {
         }
         for (Course course : temp)
             this.courses.add(course);
+    }
+
+    public Set<String> getCourseNumbers() {
+        return courseNumbers;
     }
 
     public Set<Course> getCourses() {

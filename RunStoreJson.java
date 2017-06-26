@@ -1,6 +1,5 @@
 package com.CourseSchedule;
 
-import com.CourseSchedule.CourseScheduleManager.CourseManager;
 import com.CourseSchedule.DataParser.ReadObjects;
 import com.CourseSchedule.JsonFileStoreAndRead.StoreJson;
 
@@ -10,9 +9,8 @@ import com.CourseSchedule.JsonFileStoreAndRead.StoreJson;
 public class RunStoreJson {
     public static void main(String[] args) {
         new ReadObjects();
-        String[] temp = CourseManager.getInstance().getFaculties();
-        for (int i = 0; i < temp.length ; i++)
-            System.out.println(temp[i]);
+
+        System.out.println("Finished Reading");
 
         new StoreJson();
     }

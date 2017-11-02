@@ -1,7 +1,6 @@
 package com.CourseSchedule;
 
 import com.CourseSchedule.CourseScheduleManager.*;
-import com.CourseSchedule.CourseScheduleManager.Exceptions.InstructorTBAException;
 import com.CourseSchedule.CourseScheduleManager.Exceptions.NoScheduledMeetingException;
 import com.CourseSchedule.DataParser.ReadObjects;
 import org.json.JSONArray;
@@ -87,14 +86,14 @@ public class Main {
                         } catch (NoScheduledMeetingException ignored) {
                         }
 
-                        try {
+//                        try {
                             Instructor instructor = section.getInstructor();
                             JSONObject instructorInfo = new JSONObject();
                             instructorInfo.put("name", instructor.getName());
                             instructorInfo.put("website", instructor.getWebsite());
                             sectionJson.put("instructor", instructorInfo);
-                        } catch (InstructorTBAException ignored) {
-                        }
+//                        } catch (InstructorTBAException ignored) {
+//                        }
 
                         sectionJsonArray.put(sectionJson);
                         //sectionObjects.put(sectionKey, sectionJson);

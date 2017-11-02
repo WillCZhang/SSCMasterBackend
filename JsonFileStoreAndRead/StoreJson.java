@@ -1,7 +1,6 @@
 package com.CourseSchedule.JsonFileStoreAndRead;
 
 import com.CourseSchedule.CourseScheduleManager.*;
-import com.CourseSchedule.CourseScheduleManager.Exceptions.InstructorTBAException;
 import com.CourseSchedule.CourseScheduleManager.Exceptions.NoScheduledMeetingException;
 import com.CourseSchedule.DataParser.ReadObjects;
 import org.json.JSONArray;
@@ -19,7 +18,7 @@ import java.util.Set;
  */
 public class StoreJson {
     public static final String JSON = ".json";
-    public static final String tempPath = "/Users/ZC/Documents/UBCCourseManager/app/src/main/assets/";
+    public static final String tempPath = "/Users/ZC/Dropbox/CourseScheduleBackground/src/com/CourseSchedule/JsonData/";
     public static final String SECTION_JSON_PATH = tempPath;
             //"/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/JsonData/sections/";
     public static final String COURSES_JSON_PATH = tempPath;
@@ -138,8 +137,10 @@ public class StoreJson {
 
         try {
             Classroom classroom = section.getClassroom();
-            sectionJson.put("classroom", classroom.getName());
-            sectionJson.put("building", classroom.getBuildingThatThisClassroomAt().getName());
+            if (classroom != null) {
+                sectionJson.put("classroom", classroom.getName());
+                sectionJson.put("building", classroom.getBuildingThatThisClassroomAt().getName());
+            }
 
             Set<String> days = section.getDays();
             JSONArray daysJsonArray = new JSONArray();
@@ -155,14 +156,16 @@ public class StoreJson {
         } catch (NoScheduledMeetingException ignored) {
         }
 
-        try {
+//        try {
             Instructor instructor = section.getInstructor();
+        if (instructor!=null) {
             JSONObject instructorInfo = new JSONObject();
             instructorInfo.put("name", instructor.getName());
             instructorInfo.put("website", instructor.getWebsite());
             sectionJson.put("instructor", instructorInfo);
-        } catch (InstructorTBAException ignored) {
         }
+//        } catch (InstructorTBAException ignored) {
+//        }
 
         Course course = section.getCourse();
         FileWriter fileWriter = new FileWriter(SECTION_JSON_PATH +

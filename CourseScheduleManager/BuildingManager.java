@@ -1,6 +1,7 @@
 package com.CourseSchedule.CourseScheduleManager;
 
 import java.io.Serializable;
+import java.util.ConcurrentModificationException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,16 +29,20 @@ public class BuildingManager implements Serializable {
     }
 
     public Building getBuilding(Building building) {
-        for (Building building1 : buildings) {
-            if (building.equals(building1)) {
-                for (Classroom classroom : building) {
-                    building1.addClassroom(classroom);
-                    classroom.addBuilding(building1);
-                    return building1;
+        try {
+            for (Building building1 : buildings) {
+                if (building.equals(building1)) {
+                    for (Classroom classroom : building) {
+                        building1.addClassroom(classroom);
+                        classroom.addBuilding(building1);
+                        return building1;
+                    }
                 }
             }
+            buildings.add(building);
+        } catch (ConcurrentModificationException e) {
+            getBuilding(building);
         }
-        buildings.add(building);
         return building;
     }
 

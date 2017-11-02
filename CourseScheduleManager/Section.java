@@ -1,6 +1,5 @@
 package com.CourseSchedule.CourseScheduleManager;
 
-import com.CourseSchedule.CourseScheduleManager.Exceptions.InstructorTBAException;
 import com.CourseSchedule.CourseScheduleManager.Exceptions.NoScheduledMeetingException;
 
 import java.io.Serializable;
@@ -102,11 +101,9 @@ public class Section implements Serializable {
 
         }
 
-        try {
+//        try {
             this.instructor = section.getInstructor();
-        } catch (InstructorTBAException ignored) {
 
-        }
     }
 
     public String getSection() {
@@ -147,9 +144,9 @@ public class Section implements Serializable {
         return timeMap;
     }
 
-    public Classroom getClassroom() throws NoScheduledMeetingException {
-        if (classroom == null)
-            throw new NoScheduledMeetingException();
+    public Classroom getClassroom() {
+//        if (classroom == null)
+//            throw new NoScheduledMeetingException();
         return classroom;
     }
 
@@ -171,9 +168,9 @@ public class Section implements Serializable {
         return result;
     }
 
-    public Instructor getInstructor() throws InstructorTBAException {
-        if (instructor == null)
-            throw new InstructorTBAException();
+    public Instructor getInstructor() {
+//        if (instructor == null)
+//            throw new InstructorTBAException();
         return instructor;
     }
 

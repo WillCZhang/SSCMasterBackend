@@ -1,7 +1,6 @@
 package com.CourseSchedule.DataParser;
 
 import com.CourseSchedule.CourseScheduleManager.*;
-import com.CourseSchedule.CourseScheduleManager.Exceptions.NoScheduledMeetingException;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -16,7 +15,7 @@ import java.sql.Time;
  * Created by Will on 2017/5/24.
  */
 public class ModifyMultithreadedRequestData implements Runnable{
-    public static final String OBJECT_PATH = "/Users/ZC/Documents/CourseScheduleBackground/src/com/CourseSchedule/CourseScheduleManager/";
+    public static final String OBJECT_PATH = "/Users/ZC/Dropbox/CourseScheduleBackground/src/com/CourseSchedule/CourseScheduleManager";
     public static final String PREFIX = "https://courses.students.ubc.ca";
     private static Section lastSection;
     private int count = 0;
@@ -270,9 +269,7 @@ public class ModifyMultithreadedRequestData implements Runnable{
                     Time end = new Time(Integer.parseInt(time2[0]), Integer.parseInt(time2[1]), 0);
                     lastSection.addTime(days, start, end);
                 }
-            } catch (NoScheduledMeetingException e) {
-                return;
-            } catch (NumberFormatException e) {
+            }  catch (NumberFormatException e) {
 
             }
         }

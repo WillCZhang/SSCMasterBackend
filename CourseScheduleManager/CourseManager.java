@@ -50,19 +50,27 @@ public class CourseManager implements Serializable {
 
     public void addCourse(String course, String number, String name) {
         Department temp = new Department(course);
-        for (Department department : departments) {
-            if (department.equals(temp)) {
-                Course tempCourse = new Course(department, number, name);
-                department.addCourse(tempCourse);
+        try {
+            for (Department department : departments) {
+                if (department.equals(temp)) {
+                    Course tempCourse = new Course(department, number, name);
+                    department.addCourse(tempCourse);
+                }
             }
+        } catch (ConcurrentModificationException e) {
+            addCourse(course, number, name);
         }
     }
 
     public Course getCourse(String course, String number) {
         Department temp = new Department(course);
-        for (Department department : departments)
-            if (department.equals(temp))
-                return department.getCourse(number);
+        try {
+            for (Department department : departments)
+                if (department.equals(temp))
+                    return department.getCourse(number);
+        } catch (ConcurrentModificationException e) {
+            getCourse(course,number);
+        }
         return null;
     }
 
@@ -157,5 +165,9 @@ public class CourseManager implements Serializable {
 
     public static void setInstance(CourseManager courseManager) {
         instance = courseManager;
+    }
+
+    public Set<Department> getDepartmentSet() {
+        return Collections.unmodifiableSet(this.departments);
     }
 }

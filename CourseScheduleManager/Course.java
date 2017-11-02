@@ -1,8 +1,5 @@
 package com.CourseSchedule.CourseScheduleManager;
 
-import com.CourseSchedule.CourseScheduleManager.Exceptions.InstructorTBAException;
-import com.CourseSchedule.CourseScheduleManager.Exceptions.NoScheduledMeetingException;
-
 import java.io.Serializable;
 import java.util.*;
 
@@ -72,14 +69,14 @@ public class Course implements Serializable, Iterable<Section> {
     }
 
     private void addInstructorAndClassroom(Section section) {
-        try {
+//        try {
             instructorsWhoOfferThisCourse.add(section.getInstructor());
-        } catch (InstructorTBAException ignored) {
-        }
-        try {
+//        } catch (InstructorTBAException ignored) {
+//        }
+//        try {
             classrooms.add(section.getClassroom());
-        } catch (NoScheduledMeetingException ignored) {
-        }
+//        } catch (NoScheduledMeetingException ignored) {
+//        }
     }
 
     public Section getSection(Course course, String name) {
@@ -96,11 +93,11 @@ public class Course implements Serializable, Iterable<Section> {
             String a = "section!" + section.getSection() + "@"
                     + section.getActivity() + "@" +
                     section.getTerm() + "@";
-            try {
+//            try {
                 a += section.getInstructor().getName();
-            } catch (InstructorTBAException e) {
-                a += "Instructor TBA";
-            }
+//            } catch (InstructorTBAException e) {
+//                a += "Instructor TBA";
+//            }
             temp.add(a);
         }
         return temp;

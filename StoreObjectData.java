@@ -13,9 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import static com.CourseSchedule.JsonFileStoreAndRead.StoreJson.tempPath;
-
 public class StoreObjectData {
+    // TODO: write file to this path
+    public static final String PATH = "";
+    
     public static void main(String[] args) {
         new ReadObjects();
         System.out.println("Finished Reading");
@@ -35,7 +36,7 @@ public class StoreObjectData {
 
     private static void storeCourseArray(JSONArray courseList) {
         try {
-            FileWriter fileWriter = new FileWriter(tempPath + "courseList.json");
+            FileWriter fileWriter = new FileWriter(PATH + "courseList.json");
             fileWriter.write(courseList.toString().replaceAll("\n", ""));
             fileWriter.flush();
         } catch (Exception e) {

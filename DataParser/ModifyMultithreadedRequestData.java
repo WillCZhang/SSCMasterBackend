@@ -15,7 +15,7 @@ import java.sql.Time;
  * Created by Will on 2017/5/24.
  */
 public class ModifyMultithreadedRequestData implements Runnable{
-    public static final String OBJECT_PATH = "/Users/ZC/Dropbox/CourseScheduleBackground/src/com/CourseSchedule/CourseScheduleManager";
+    public static final String OBJECT_PATH = "/Users/ZC/Dropbox/CourseScheduleBackground/src/com/CourseSchedule/CourseScheduleManager/";
     public static final String PREFIX = "https://courses.students.ubc.ca";
     private static Section lastSection;
     private int count = 0;

@@ -17,7 +17,9 @@ public class StoreObjectData {
     // TODO: write file to this path
     public static final String PATH = "";
     
-    public static void main(String[] args) {
+    private JSONArray courseList;
+
+    public StoreObjectData() {
         new ReadObjects();
         System.out.println("Finished Reading");
 
@@ -30,8 +32,12 @@ public class StoreObjectData {
 
         System.out.println("There are " + result.size() + " courses found on SSC");
 
-        JSONArray courseList = createCourseJson(result);
+        courseList = createCourseJson(result);
         storeCourseArray(courseList);
+    }
+
+    public JSONArray getCourseList() {
+        return courseList;
     }
 
     private static void storeCourseArray(JSONArray courseList) {
@@ -156,5 +162,9 @@ public class StoreObjectData {
     private static String handleTime(Time time) {
         String temp = time.toString();
         return temp.split(":")[0] + ":" + temp.split(":")[1];
+    }
+    
+    public static void main(String[] args) {
+        new StoreObjectData();
     }
 }

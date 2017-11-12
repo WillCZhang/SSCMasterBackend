@@ -18,6 +18,7 @@ public class StoreObjectData {
     public static final String PATH = "";
     
     private JSONArray courseList;
+    private JSONArray sectionList;
 
     public StoreObjectData() {
         new ReadObjects();
@@ -32,25 +33,45 @@ public class StoreObjectData {
 
         System.out.println("There are " + result.size() + " courses found on SSC");
 
+        sectionList = new JSONArray();
         courseList = createCourseJson(result);
-        storeCourseArray(courseList);
+
+        storeCourseArray();
+        storeSectionArray();
     }
 
     public JSONArray getCourseList() {
         return courseList;
     }
 
-    private static void storeCourseArray(JSONArray courseList) {
+    public JSONArray getSectionList() {
+        return sectionList;
+    }
+
+    private void storeCourseArray() {
         try {
             FileWriter fileWriter = new FileWriter(PATH + "courseList.json");
             fileWriter.write(courseList.toString().replaceAll("\n", ""));
             fileWriter.flush();
         } catch (Exception e) {
-            System.out.println("wrong!!!");
+            System.out.println("Wrong!!!");
         }
     }
 
-    private static JSONArray createCourseJson(Set<CourseObject> result) {
+    private void storeSectionArray() {
+        try {
+            for (int i = 0; i < sectionList.length(); i++) {
+                JSONObject section = sectionList.getJSONObject(i);
+                FileWriter fileWriter = new FileWriter(PATH + section.getString("course") + section.getString("section"));
+                fileWriter.write(section.toString().replaceAll("\n", ""));
+                fileWriter.flush();
+            }
+        } catch (Exception e) {
+            System.out.println("Wrong!!!");
+        }
+    }
+
+    private JSONArray createCourseJson(Set<CourseObject> result) {
         JSONArray jsonArray = new JSONArray();
         for (CourseObject courseObject : result) {
             try {
@@ -64,8 +85,13 @@ public class StoreObjectData {
                 temp.put("credits", courseObject.getCredits());
                 temp.put("reqs", courseObject.getReqs());
 
-                JSONArray sectionJson = creatSectionJson(courseObject.getSections());
-                temp.put("sections", sectionJson);
+                StringBuilder sections = new StringBuilder();
+                for (SectionObject sectionObject : courseObject.getSections()) {
+                    JSONObject sectionObj = creatSectionJson(sectionObject);
+                    sectionList.put(sectionObj);
+                    sections.append(sectionObj.getString("section") + ";");
+                }
+                temp.put("sections", sections.toString());
 
                 jsonArray.put(temp);
             } catch (JSONException e) {
@@ -76,39 +102,34 @@ public class StoreObjectData {
         return jsonArray;
     }
 
-    private static JSONArray creatSectionJson(Set<SectionObject> sections) throws JSONException {
-        JSONArray temp = new JSONArray();
-        for (SectionObject sectionObject : sections) {
-            JSONObject sectionJson = new JSONObject();
-            sectionJson.put("section", sectionObject.getSection());
-            sectionJson.put("status", sectionObject.getStatus());
-            sectionJson.put("activity", sectionObject.getActivity());
-            sectionJson.put("instructor", sectionObject.getInstructor());
-            sectionJson.put("instructorWebsite", sectionObject.getInstructorWebsite());
-            sectionJson.put("classroom", sectionObject.getClassroom());
-            sectionJson.put("term", sectionObject.getTerm());
-            sectionJson.put("restrictTo", sectionObject.getRestrictTo());
-            sectionJson.put("lastWithdraw", sectionObject.getLastWithdraw());
+    private JSONObject creatSectionJson(SectionObject section) throws JSONException {
+        JSONObject sectionJson = new JSONObject();
+        sectionJson.put("course", section.getCourse());
+        sectionJson.put("section", section.getSection());
+        sectionJson.put("status", section.getStatus());
+        sectionJson.put("activity", section.getActivity());
+        sectionJson.put("instructor", section.getInstructor());
+        sectionJson.put("instructorWebsite", section.getInstructorWebsite());
+        sectionJson.put("classroom", section.getClassroom());
+        sectionJson.put("term", section.getTerm());
+        sectionJson.put("restrictTo", section.getRestrictTo());
+        sectionJson.put("lastWithdraw", section.getLastWithdraw());
 
-            sectionJson.put("totalSeats", sectionObject.getTotalSeats());
-            sectionJson.put("currentRegistered", sectionObject.getCurrentRegistered());
-            sectionJson.put("restrictSeats", sectionObject.getRestrictSeats());
-            sectionJson.put("generalSeats", sectionObject.getGeneralSeats());
+        sectionJson.put("totalSeats", section.getTotalSeats());
+        sectionJson.put("currentRegistered", section.getCurrentRegistered());
+        sectionJson.put("restrictSeats", section.getRestrictSeats());
+        sectionJson.put("generalSeats", section.getGeneralSeats());
 
-            JSONArray timeMap = new JSONArray();
-            if (sectionObject.getTimeMap() != null) {
-                for (Map.Entry<String, String> entry : sectionObject.getTimeMap().entrySet()) {
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put(entry.getKey(), entry.getValue());
-                    timeMap.put(jsonObject);
-                }
+        JSONArray timeMap = new JSONArray();
+        if (section.getTimeMap() != null) {
+            for (Map.Entry<String, String> entry : section.getTimeMap().entrySet()) {
+                JSONObject jsonObject = new JSONObject();
+                jsonObject.put(entry.getKey(), entry.getValue());
+                timeMap.put(jsonObject);
             }
-            sectionJson.put("timeMap", timeMap);
-
-            temp.put(sectionJson);
         }
-
-        return temp;
+        sectionJson.put("timeMap", timeMap);
+        return sectionJson;
     }
 
     private static void parseCourseToCourseObject(Set<CourseObject> result, Department department) {
@@ -134,7 +155,8 @@ public class StoreObjectData {
     }
 
     private static void parseSectionToSectionObject(Set<SectionObject> sections, Section section) {
-        SectionObject temp = new SectionObject(section.getSection(), section.getStatus(), section.getActivity(), section.getTerm());
+        String course = section.getCourse().getDepartment().getShortName() + section.getCourse().getCourseNumber();
+        SectionObject temp = new SectionObject(course, section.getSection(), section.getStatus(), section.getActivity(), section.getTerm());
 
         if (section.getInstructor() != null) {
             temp.setInstructor(section.getInstructor().getName());
@@ -163,7 +185,7 @@ public class StoreObjectData {
         String temp = time.toString();
         return temp.split(":")[0] + ":" + temp.split(":")[1];
     }
-    
+
     public static void main(String[] args) {
         new StoreObjectData();
     }

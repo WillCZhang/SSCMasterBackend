@@ -1,6 +1,7 @@
 package com.CourseSchedule.CourseScheduleManager;
 
 public class SectionObject {
+    private String course;
     private String section, status, activity;
     private String instructor;
     private String instructorWebsite;
@@ -13,7 +14,8 @@ public class SectionObject {
     private Map<String, String> timeMap;
     private int totalSeats, currentRegistered, restrictSeats, generalSeats;
 
-    public SectionObject(String section, String status, String activity, String term) {
+    public SectionObject(String course, String section, String status, String activity, String term) {
+        this.course = course;
         this.activity = activity;
         this.section = section;
         this.status = status;
@@ -111,6 +113,10 @@ public class SectionObject {
 
     public int getGeneralSeats() {
         return generalSeats;
+    }
+    
+    public String getCourse() {
+        return course;
     }
 
     public String getRestrictTo() {

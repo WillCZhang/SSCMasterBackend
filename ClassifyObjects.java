@@ -60,39 +60,41 @@ public class ClassifyObjects {
             JSONObject course = courseList.getJSONObject(i);
             String faculty = course.getString("faculty");
             String departmentSN = course.getString("departmentShortName");
+            String departmentFN = course.getString("departmentFullName");
+            String departmentSNFNPair = departmentSN + "," + departmentFN;
             switch (faculty) {
                 case SCIENCE:
-                    addToPair(departmentSN, SCIENCE);
+                    addToPair(departmentSNFNPair, SCIENCE);
                     break;
                 case ARTS:
-                    addToPair(departmentSN, ARTS);
+                    addToPair(departmentSNFNPair, ARTS);
                     break;
                 case DENTISTRY:
-                    addToPair(departmentSN, DENTISTRY);
+                    addToPair(departmentSNFNPair, DENTISTRY);
                     break;
                 case ENGEERING:
-                    addToPair(departmentSN, ENGEERING);
+                    addToPair(departmentSNFNPair, ENGEERING);
                     break;
                 case EDUCATION:
-                    addToPair(departmentSN, EDUCATION);
+                    addToPair(departmentSNFNPair, EDUCATION);
                     break;
                 case "Faculty of Comm and Bus Admin":
-                    addToPair(departmentSN, SAUDER);
+                    addToPair(departmentSNFNPair, SAUDER);
                     break;
                 case FORESTRY:
-                    addToPair(departmentSN, FORESTRY);
+                    addToPair(departmentSNFNPair, FORESTRY);
                     break;
                 case LFS:
-                    addToPair(departmentSN, LFS);
+                    addToPair(departmentSNFNPair, LFS);
                     break;
                 case MUSIC:
-                    addToPair(departmentSN, MUSIC);
+                    addToPair(departmentSNFNPair, MUSIC);
                     break;
                 case LAW:
-                    addToPair(departmentSN, LAW);
+                    addToPair(departmentSNFNPair, LAW);
                     break;
                 default:
-                    addToPair(departmentSN, OTHERS);
+                    addToPair(departmentSNFNPair, OTHERS);
                     break;
             }
         }
@@ -109,14 +111,14 @@ public class ClassifyObjects {
         }
     }
 
-    private void addToPair(String departmentShortName, String faculty) throws JSONException {
+    private void addToPair(String departmentSNFNPair, String faculty) throws JSONException {
         JSONArray departmentList;
         try {
             departmentList = facultyDepartmentPair.getJSONArray(faculty);
-            putIntoDepartmentList(departmentList, departmentShortName);
+            putIntoDepartmentList(departmentList, departmentSNFNPair);
         } catch (JSONException e) {
             departmentList = new JSONArray();
-            departmentList.put(departmentShortName);
+            departmentList.put(departmentSNFNPair);
             facultyDepartmentPair.put(faculty, departmentList);
         }
     }

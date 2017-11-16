@@ -10,3 +10,7 @@ This file is inside the `JsonData` folder, but the path can be changed by modify
 * `DataParser`: a multithreading crawler that iterates over 18,000 course websites on the SSC and parse those data to the management system.
 * `JsonData`: storing course data in JSON format. 
 * `JsonFileStoreAndRead`: helper methods that reads object data and stores JSON files.
+
+Update:
+I'm modifying the way of SSCMaster requesting and searching data.
+`FacultyDepartmentPair.json` contains pairs of departments and faculties, and `ClassifyObjects.java` is built for storing data in different kind.

@@ -7,12 +7,6 @@ import java.io.FileWriter;
 import static com.CourseSchedule.StoreObjectData.PATH;
 
 public class ClassifyObjects {
-    public static final String DEPARTMENT_PATH = "";
-    public static final String COURSE_PATH = "";
-    public static final String SECTION_PATH = "";
-    public static final String BUILDING_PATH = "";
-    public static final String INSTRUCTOR_PATH = "";
-
     private final static String SCIENCE = "Faculty of Science";
     private final static String ARTS = "Faculty of Arts";
     private final static String SAUDER = "Sauder School of Business";
@@ -28,6 +22,7 @@ public class ClassifyObjects {
     private JSONArray courseList;
     private JSONArray sectionList;
     private JSONObject facultyDepartmentPair;
+    private JSONObject departmentCoursePair;
 
     public ClassifyObjects() {
         StoreObjectData storeObjectData = new StoreObjectData();
@@ -37,23 +32,36 @@ public class ClassifyObjects {
 
         try {
             storeFacultyDepartmentPair();
-        } catch (JSONException ignored) {
-
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
-//        sortByDepartment();
-//        sortByCourse();
-//        sortBySection();
-//        sortByBuilding();
-//        sortByInstructor();
+        try {
+            storeDepartmentCoursePair();
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
-    
-    
-/*
-  By just looking at the code, storeFacultyDepartmentPair() method has a pretty low running time, 
-  but it actually runs pretty fast... So just leave it there... 
-  This classify method should not be using often as this is doing in the backend...
-*/
+
+    private void storeDepartmentCoursePair() throws JSONException {
+        departmentCoursePair = new JSONObject();
+        for (int i = 0; i < courseList.length(); i++) {
+            JSONObject course = courseList.getJSONObject(i);
+            String departmentSN = course.getString("departmentShortName");
+            JSONArray courseNumberList;
+            try {
+                courseNumberList = departmentCoursePair.getJSONArray(departmentSN);
+            } catch (JSONException e) {
+                courseNumberList = new JSONArray();
+                departmentCoursePair.put(departmentSN, courseNumberList);
+            }
+            String courseNumber = course.getString("courseNumber");
+            String courseName = course.getString("courseName");
+            courseNumberList.put(courseNumber + "," + courseName);
+        }
+        writeToDisk("DepartmentCoursePair.json", departmentCoursePair);
+    }
+
     private void storeFacultyDepartmentPair() throws JSONException {
         facultyDepartmentPair = new JSONObject();
         for (int i = 0; i < courseList.length(); i++) {
@@ -98,13 +106,13 @@ public class ClassifyObjects {
                     break;
             }
         }
-        writeToDisk();
+        writeToDisk("FacultyDepartmentPair.json", facultyDepartmentPair);
     }
 
-    private void writeToDisk() {
+    private void writeToDisk(String name, JSONObject sourse) {
         try {
-            FileWriter fileWriter = new FileWriter(PATH + "FacultyDepartmentPair.json");
-            fileWriter.write(facultyDepartmentPair.toString());
+            FileWriter fileWriter = new FileWriter(PATH + name);
+            fileWriter.write(sourse.toString());
             fileWriter.flush();
         } catch (Exception e) {
             System.out.println("Wrong!!!");
@@ -130,26 +138,6 @@ public class ClassifyObjects {
                 return;
         }
         departmentList.put(departmentShortName);
-    }
-
-    private void sortByDepartment() throws JSONException {
-
-    }
-
-    private void sortByCourse() {
-
-    }
-
-    private void sortBySection() {
-
-    }
-
-    private void sortByBuilding() {
-
-    }
-
-    private void sortByInstructor() {
-
     }
 
     private static void storeJsonArray(JSONArray jsonArray, String path, String fileName) {
